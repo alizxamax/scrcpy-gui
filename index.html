@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        
+
         :root {
             /* Default: Ultraviolet */
             --bg-color: #0c0c0e;
@@ -24,43 +24,43 @@
 
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: var(--text-main); overflow-x: hidden; transition: background-color 0.3s ease; }
         .glass { background: var(--glass-bg); backdrop-filter: blur(12px); border: 1px solid var(--border-color); }
-        
+
         .btn-primary { background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%); color: #ffffff; transition: all 0.2s ease; }
         .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 15px var(--accent-glow); }
-        
+
         .btn-stop { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: #ffffff; transition: all 0.2s ease; }
         .btn-stop:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); }
-        
+
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: var(--bg-color); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 10px; }
-        
+
         kbd { background-color: #18181b; border-radius: 4px; padding: 2px 5px; font-family: monospace; font-size: 0.7rem; border: 1px solid #27272a; color: #a1a1aa; }
         input[type="number"], input[type="text"], select { background: var(--input-bg); border: 1px solid #27272a; border-radius: 4px; padding: 6px 10px; color: var(--text-main); outline: none; transition: border-color 0.2s; }
         input:focus, select:focus { border-color: var(--accent-primary); }
-        
+
         .animate-spin-custom { animation: spin 1s linear infinite; }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        
+
         .social-link { transition: all 0.2s ease; cursor: pointer; }
         .social-link:hover { transform: translateY(-2px); color: var(--accent-primary); }
-        
+
         .tab-btn { transition: all 0.2s; border-bottom: 2px solid transparent; opacity: 0.6; color: var(--text-muted); }
         .tab-btn.active { border-color: var(--accent-primary); color: var(--accent-primary); opacity: 1; }
-        
+
         .recent-item { transition: all 0.15s ease; cursor: pointer; border: 1px solid var(--accent-soft); }
         .recent-item:hover { background: var(--accent-soft); border-color: var(--accent-glow); color: var(--accent-primary); }
-        
+
         #dropZone { border: 2px dashed var(--accent-soft); transition: all 0.2s ease; }
         #dropZone.drag-active { border-color: var(--accent-primary); background: var(--accent-soft); transform: scale(1.01); }
-        
+
         /* Box Tooltips */
         .hint-box { position: relative; display: inline-flex; }
-        .hint-content { 
-            visibility: hidden; width: 220px; background: #18181b; color: #e4e4e7; text-align: left; 
-            border-radius: 10px; padding: 12px; position: absolute; z-index: 100; bottom: 140%; left: 50%; 
-            transform: translateX(-50%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 1px solid var(--accent-glow); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); 
+        .hint-content {
+            visibility: hidden; width: 220px; background: #18181b; color: #e4e4e7; text-align: left;
+            border-radius: 10px; padding: 12px; position: absolute; z-index: 100; bottom: 140%; left: 50%;
+            transform: translateX(-50%); opacity: 0; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--accent-glow); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
             font-size: 11px; line-height: 1.5; font-weight: 400; text-transform: none; pointer-events: none;
         }
         .hint-content::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -6px; border-width: 6px; border-style: solid; border-color: var(--accent-glow) transparent transparent transparent; }
@@ -119,7 +119,7 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
+
             <!-- SECTION 1: Left Sidebar -->
             <aside class="lg:col-span-3 space-y-4">
                 <div class="glass p-5 rounded-2xl space-y-4">
@@ -147,7 +147,7 @@
                         <button onclick="switchTab('usb')" id="tab-usb" class="tab-btn active flex-1 py-2 text-[10px] font-bold uppercase tracking-wider">USB</button>
                         <button onclick="switchTab('wireless')" id="tab-wireless" class="tab-btn flex-1 py-2 text-[10px] font-bold uppercase tracking-wider">Wireless</button>
                     </div>
-                    
+
                     <div id="usb-view" class="space-y-3">
                         <div class="bg-white/5 border border-white/10 rounded-xl p-3 space-y-2">
                             <p class="text-[10px] font-bold uppercase flex items-center gap-1.5" style="color: var(--accent-primary)"><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>USB Setup Tip</p>
@@ -195,7 +195,7 @@
             <!-- SECTION 2: Center Workspace -->
             <main class="lg:col-span-6 space-y-6">
                 <div class="glass p-5 rounded-2xl space-y-4 border border-zinc-800">
-                    <label class="text-xs font-black text-white uppercase tracking-tighter mb-2 block">Select Mirroring Source 
+                    <label class="text-xs font-black text-white uppercase tracking-tighter mb-2 block">Select Mirroring Source
                         <span class="hint-box ml-1">
                             <span class="cursor-help" style="color: var(--accent-primary)">(?)</span>
                             <span class="hint-content">Choose between standard screen mirroring, high-speed camera view, or independent desktop mode.</span>
@@ -213,7 +213,7 @@
                         <h2 class="text-sm font-bold uppercase text-zinc-300">Engine Configuration</h2>
                         <span id="mirrorStatus" class="text-[9px] font-bold uppercase tracking-wider bg-emerald-500/10 px-2 py-0.5 rounded text-emerald-500">Active</span>
                     </div>
-                    
+
                     <div class="space-y-4">
                         <div id="otgWrapper" class="p-3 bg-zinc-950/50 rounded-xl border border-zinc-800 space-y-3">
                             <label class="flex items-center gap-3 cursor-pointer group">
@@ -223,7 +223,7 @@
                             <div id="otgSubOptions" class="pl-7 hidden space-y-2">
                                 <label class="flex items-center gap-3 cursor-pointer">
                                     <input type="checkbox" id="otgPure" class="rounded text-red-500 accent-red-600">
-                                    <span class="text-[10px] text-zinc-400 uppercase font-bold">Pure OTG Mode (No Mirroring) 
+                                    <span class="text-[10px] text-zinc-400 uppercase font-bold">Pure OTG Mode (No Mirroring)
                                         <span class="hint-box ml-1">
                                             <span class="cursor-help" style="color: var(--accent-primary)">(?)</span>
                                             <span class="hint-content">Only sends keyboard/mouse input. No window will appear. Press ALT to release mouse. (Wireless uses UHID emulation).</span>
@@ -237,20 +237,20 @@
                             <div id="cameraSettings" class="hidden p-4 bg-zinc-950/40 rounded-xl border border-white/5 space-y-4">
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-2"><label class="text-[10px] uppercase font-black" style="color: var(--accent-primary)">Camera Facing</label><select id="cameraFacing" class="w-full text-xs text-zinc-200"><option value="back">Back Camera</option><option value="front">Front Camera</option><option value="external">External (USB)</option></select></div>
-                                    <div class="space-y-2"><label class="text-[10px] uppercase font-black" style="color: var(--accent-primary)">Specific ID 
+                                    <div class="space-y-2"><label class="text-[10px] uppercase font-black" style="color: var(--accent-primary)">Specific ID
                                         <span class="hint-box ml-1"><span class="cursor-help" style="color: var(--accent-primary)">(?)</span><span class="hint-content">Manual sensor ID. Use 'List Cameras' to find IDs for ultra-wide or macro lenses.</span></span>
                                     </label><input type="text" id="cameraId" placeholder="e.g. 0, 2" class="w-full text-xs text-zinc-200"></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div class="space-y-2"><label class="text-[10px] uppercase font-black" style="color: var(--accent-primary)">Video Codec</label><select id="codec" class="w-full text-xs text-zinc-200"><option value="h264">H.264 (Default)</option><option value="h265">H.265 (HEVC)</option><option value="av1">AV1</option></select></div>
-                                    <div class="space-y-2"><label class="text-[10px] uppercase font-black" style="color: var(--accent-primary)">Aspect Ratio 
+                                    <div class="space-y-2"><label class="text-[10px] uppercase font-black" style="color: var(--accent-primary)">Aspect Ratio
                                         <span class="hint-box ml-1"><span class="cursor-help" style="color: var(--accent-primary)">(?)</span><span class="hint-content">Controls the camera feed shape. 4:3 is standard photography, 16:9 is widescreen video.</span></span>
                                     </label><select id="cameraAr" class="w-full text-xs text-zinc-200"><option value="0">Default</option><option value="4:3">4:3 (Standard)</option><option value="16:9">16:9 (Widescreen)</option></select></div>
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <label class="flex items-center gap-3 cursor-pointer group">
                                         <input type="checkbox" id="cameraHighSpeed" class="rounded text-white accent-white">
-                                        <span class="text-[10px] text-zinc-300 font-bold uppercase tracking-tight">High Speed Sensor 
+                                        <span class="text-[10px] text-zinc-300 font-bold uppercase tracking-tight">High Speed Sensor
                                             <span class="hint-box ml-1"><span class="cursor-help" style="color: var(--accent-primary)">(?)</span><span class="hint-content">Unlocks 120 FPS+ for slow-motion capture. Requires hardware support. H.265 codec is recommended.</span></span>
                                         </span>
                                     </label>
@@ -262,7 +262,7 @@
                             </div>
 
                             <div id="desktopSettings" class="hidden p-4 bg-zinc-950/40 rounded-xl border border-white/5 space-y-3">
-                                <label class="text-[11px] uppercase font-black tracking-tight" style="color: var(--accent-primary)">Virtual Display Resolution 
+                                <label class="text-[11px] uppercase font-black tracking-tight" style="color: var(--accent-primary)">Virtual Display Resolution
                                     <span class="hint-box ml-1"><span class="cursor-help" style="color: var(--accent-primary)">(?)</span><span class="hint-content">Desktop Mode creates an independent virtual workspace.</span></span>
                                 </label>
                                 <div class="grid grid-cols-3 gap-3">
@@ -275,6 +275,12 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div id="resLimitWrapper" class="space-y-2"><label class="text-[11px] text-zinc-400 uppercase font-bold">Resolution Limit</label><select id="resolution" class="w-full text-sm text-zinc-200"><option value="0" selected>Original</option><option value="3840">4K</option><option value="2560">2K</option><option value="1920">1080p</option><option value="1280">720p</option></select></div>
                                 <div class="space-y-2"><label class="text-[11px] text-zinc-400 uppercase font-bold">FPS Limit</label><select id="fps" class="w-full text-sm text-zinc-200"><option value="30">30</option><option value="60" selected>60</option><option value="90">90</option><option value="120">120</option></select></div>
+                            </div>
+                            <div id="cropControlWrapper" class="space-y-2">
+                                <label class="text-[11px] text-zinc-400 uppercase font-bold flex justify-between">Crop Zoom <span id="cropZoomVal" class="text-white font-bold">0%</span>
+                                    <span class="hint-box ml-1"><span class="cursor-help" style="color: var(--accent-primary)">(?)</span><span class="hint-content">Crop the mirrored image from all sides in real time using this slider. 0% = full image.</span></span>
+                                </label>
+                                <input type="range" id="cropZoom" min="0" max="45" value="0" class="w-full h-2 accent-white bg-zinc-800 rounded-lg">
                             </div>
                             <div class="space-y-2">
                                 <label class="text-[11px] text-zinc-400 uppercase font-bold flex justify-between">Bitrate <span id="bitrateVal" class="text-white font-bold">8 Mbps</span></label>
@@ -449,26 +455,27 @@
         const PERSIST_KEY = 'scrcpy_gui_v3_final', HISTORY_KEY = 'scrcpy_gui_recent_ips', NICKNAME_KEY = 'scrcpy_device_nicknames';
         const activeSessions = new Set();
         let customScrcpyPath = localStorage.getItem('scrcpyPath') || null, recordPath = localStorage.getItem('recordPath') || null;
-        const inputIds = ['sessionMode', 'resolution', 'fps', 'bitrate', 'rotation', 'cameraFacing', 'cameraId', 'codec', 'cameraAr', 'cameraHighSpeed', 'vdWidth', 'vdHeight', 'vdDpi', 'stayAwake', 'turnOff', 'audioEnabled', 'alwaysOnTop', 'fullscreen', 'borderless', 'recordScreen', 'otgEnabled', 'otgPure', 'autoConnect'];
-        const logEl = document.getElementById('logOutput'), bitrateSlider = document.getElementById('bitrate'), bitrateVal = document.getElementById('bitrateVal'), pathDisplay = document.getElementById('pathDisplay'), startBtn = document.getElementById('startScrcpy'), refreshBtn = document.getElementById('refreshDevices'), refreshIcon = document.getElementById('refreshIcon'), sessionSelect = document.getElementById('sessionMode'), otgCheck = document.getElementById('otgEnabled'), otgPure = document.getElementById('otgPure'), otgWrapper = document.getElementById('otgWrapper'), downloadBinaryBtn = document.getElementById('downloadBinaryBtn'), deviceList = document.getElementById('deviceList'), dropZone = document.getElementById('dropZone'), apkInput = document.getElementById('apkInput'), wirelessIp = document.getElementById('wirelessIp');
+        const inputIds = ['sessionMode', 'resolution', 'fps', 'bitrate', 'rotation', 'cameraFacing', 'cameraId', 'codec', 'cameraAr', 'cameraHighSpeed', 'cropZoom', 'vdWidth', 'vdHeight', 'vdDpi', 'stayAwake', 'turnOff', 'audioEnabled', 'alwaysOnTop', 'fullscreen', 'borderless', 'recordScreen', 'otgEnabled', 'otgPure', 'autoConnect'];
+        const logEl = document.getElementById('logOutput'), bitrateSlider = document.getElementById('bitrate'), bitrateVal = document.getElementById('bitrateVal'), cropZoomSlider = document.getElementById('cropZoom'), cropZoomVal = document.getElementById('cropZoomVal'), pathDisplay = document.getElementById('pathDisplay'), startBtn = document.getElementById('startScrcpy'), refreshBtn = document.getElementById('refreshDevices'), refreshIcon = document.getElementById('refreshIcon'), sessionSelect = document.getElementById('sessionMode'), otgCheck = document.getElementById('otgEnabled'), otgPure = document.getElementById('otgPure'), otgWrapper = document.getElementById('otgWrapper'), downloadBinaryBtn = document.getElementById('downloadBinaryBtn'), deviceList = document.getElementById('deviceList'), dropZone = document.getElementById('dropZone'), apkInput = document.getElementById('apkInput'), wirelessIp = document.getElementById('wirelessIp');
 
         function renameDevice() { const dev = deviceList.value; if (!dev) return; const nick = prompt(`Enter nickname for ${dev}:`); if (nick !== null) { const nicks = JSON.parse(localStorage.getItem(NICKNAME_KEY) || '{}'); nicks[dev] = nick; localStorage.setItem(NICKNAME_KEY, JSON.stringify(nicks)); scanDevices(); } }
         function saveSettings() { const settings = {}; inputIds.forEach(id => { const el = document.getElementById(id); if (el) settings[id] = el.type === 'checkbox' ? el.checked : el.value; }); settings['wirelessIpVal'] = wirelessIp.value; localStorage.setItem(PERSIST_KEY, JSON.stringify(settings)); }
-        async function loadSettings() { applyTheme(localStorage.getItem('scrcpy_gui_theme') || 'ultraviolet'); if (!recordPath && checkSupported()) { try { recordPath = await ipcRenderer.invoke('get-default-video-path'); localStorage.setItem('recordPath', recordPath); } catch(e) {} } if(document.getElementById('recPathDisplay') && recordPath) document.getElementById('recPathDisplay').textContent = recordPath; const saved = localStorage.getItem(PERSIST_KEY); if (saved) { try { const s = JSON.parse(saved); inputIds.forEach(id => { const el = document.getElementById(id); if(!el || s[id] === undefined) return; if(el.type === 'checkbox') el.checked = s[id]; else el.value = s[id]; }); if (s['wirelessIpVal']) wirelessIp.value = s['wirelessIpVal']; } catch (e) {} } updateModeUI(); updateRecentList(); if(bitrateSlider && bitrateVal) bitrateVal.textContent = bitrateSlider.value + ' Mbps'; }
+        async function loadSettings() { applyTheme(localStorage.getItem('scrcpy_gui_theme') || 'ultraviolet'); if (!recordPath && checkSupported()) { try { recordPath = await ipcRenderer.invoke('get-default-video-path'); localStorage.setItem('recordPath', recordPath); } catch(e) {} } if(document.getElementById('recPathDisplay') && recordPath) document.getElementById('recPathDisplay').textContent = recordPath; const saved = localStorage.getItem(PERSIST_KEY); if (saved) { try { const s = JSON.parse(saved); inputIds.forEach(id => { const el = document.getElementById(id); if(!el || s[id] === undefined) return; if(el.type === 'checkbox') el.checked = s[id]; else el.value = s[id]; }); if (s['wirelessIpVal']) wirelessIp.value = s['wirelessIpVal']; } catch (e) {} } updateModeUI(); updateRecentList(); if(bitrateSlider && bitrateVal) bitrateVal.textContent = bitrateSlider.value + ' Mbps'; if (cropZoomSlider && cropZoomVal) cropZoomVal.textContent = cropZoomSlider.value + '%'; }
         function updateRecentList() { const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); const container = document.getElementById('recentList'), parent = document.getElementById('recentContainer'); if (history.length === 0) { parent.classList.add('hidden'); return; } parent.classList.remove('hidden'); container.innerHTML = ''; history.forEach(ip => { const div = document.createElement('div'); div.className = 'recent-item px-3 py-1.5 rounded bg-zinc-900/50 text-[10px] font-mono text-zinc-400 flex justify-between items-center group'; div.innerHTML = `<span>${ip}</span><svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>`; div.onclick = () => { wirelessIp.value = ip; saveSettings(); }; container.appendChild(div); }); }
         function addToHistory(ip) { if (!ip || ip.trim() === "") return; let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); history = history.filter(item => item !== ip); history.unshift(ip); localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, 5))); updateRecentList(); }
         function updateModeUI() {
             const mode = sessionSelect.value, otg = otgCheck.checked, pure = otgPure.checked;
-            const camBlock = document.getElementById('cameraSettings'), videoControls = document.getElementById('videoControls'), deskBlock = document.getElementById('desktopSettings'), mirrorStatus = document.getElementById('mirrorStatus'), otgSub = document.getElementById('otgSubOptions'), resLimitWrapper = document.getElementById('resLimitWrapper');
+            const camBlock = document.getElementById('cameraSettings'), videoControls = document.getElementById('videoControls'), deskBlock = document.getElementById('desktopSettings'), mirrorStatus = document.getElementById('mirrorStatus'), otgSub = document.getElementById('otgSubOptions'), resLimitWrapper = document.getElementById('resLimitWrapper'), cropControlWrapper = document.getElementById('cropControlWrapper');
             if(otgWrapper) otgWrapper.classList.toggle('hidden', mode !== 'mirror');
             if(otgSub) otgSub.classList.toggle('hidden', !otg);
             if(camBlock) camBlock.classList.toggle('hidden', mode !== 'camera');
             if(deskBlock) deskBlock.classList.toggle('hidden', mode !== 'desktop');
             if(resLimitWrapper) resLimitWrapper.classList.toggle('hidden', mode === 'desktop');
-            if (mode === 'mirror' && otg && pure) { videoControls.classList.add('opacity-40', 'pointer-events-none'); mirrorStatus.textContent = "Mirroring Disabled"; mirrorStatus.className = "text-[9px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded"; document.getElementById('recordScreen').disabled = true; } 
+            if(cropControlWrapper) cropControlWrapper.classList.toggle('hidden', mode !== 'mirror');
+            if (mode === 'mirror' && otg && pure) { videoControls.classList.add('opacity-40', 'pointer-events-none'); mirrorStatus.textContent = "Mirroring Disabled"; mirrorStatus.className = "text-[9px] font-bold text-red-400 bg-red-500/10 px-2 py-0.5 rounded"; document.getElementById('recordScreen').disabled = true; }
             else { videoControls.classList.remove('opacity-40', 'pointer-events-none'); mirrorStatus.textContent = "Active"; mirrorStatus.className = "text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded"; document.getElementById('recordScreen').disabled = false; }
             const dev = deviceList.value;
-            if (dev && activeSessions.has(dev)) { startBtn.textContent = 'Stop Session'; startBtn.className = 'btn-stop w-full py-5 rounded-2xl text-white text-lg font-bold uppercase transition-all'; } 
+            if (dev && activeSessions.has(dev)) { startBtn.textContent = 'Stop Session'; startBtn.className = 'btn-stop w-full py-5 rounded-2xl text-white text-lg font-bold uppercase transition-all'; }
             else { let btnText = "Launch Mirroring"; if (mode === 'camera') btnText = "Launch Camera"; else if (mode === 'desktop') btnText = "Launch Desktop Mode"; else if (mode === 'mirror' && otg && pure) btnText = "Launch OTG Mode"; startBtn.textContent = btnText; startBtn.className = 'btn-primary w-full py-5 rounded-2xl text-white text-lg font-bold uppercase transition-all'; }
         }
 
@@ -484,26 +491,27 @@
         sessionSelect.onchange = () => { updateModeUI(); saveSettings(); };
         otgCheck.onchange = () => { updateModeUI(); saveSettings(); };
         otgPure.onchange = () => { updateModeUI(); saveSettings(); };
+
         document.getElementById('listCamSizes').onclick = async () => { const dev = deviceList.value; if (!dev) return addLog("Select a device first!", "error"); const facing = document.getElementById('cameraFacing').value; const res = await ipcRenderer.invoke('get-camera-sizes', { device: dev, customPath: customScrcpyPath, facing: facing }); if (res.success) res.output.split('\n').forEach(l => { if(l.trim()) addLog(l.trim(), 'success'); }); else addLog(res.message, 'error'); };
         document.getElementById('cameraHighSpeed').onchange = () => { if (document.getElementById('cameraHighSpeed').checked) { document.getElementById('fps').value = "120"; if (parseInt(bitrateSlider.value) < 16) { bitrateSlider.value = "20"; bitrateVal.textContent = "20 Mbps"; } } saveSettings(); };
         inputIds.forEach(id => { const el = document.getElementById(id); if (el && !['sessionMode','otgEnabled','otgPure'].includes(id)) { el.addEventListener('change', saveSettings); if (['range','number','text'].includes(el.type)) el.addEventListener('input', saveSettings); } });
         function addLog(msg, type = 'info') { const div = document.createElement('div'); div.className = {error:'text-red-400 border-l-2 border-red-500 pl-2 my-1', success:'border-l-2 border-zinc-100 pl-2 my-1', info:'text-zinc-300'}[type] || 'text-zinc-300'; if (type === 'success') div.style.color = 'var(--accent-primary)'; div.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`; logEl.appendChild(div); logEl.scrollTop = logEl.scrollHeight; }
         async function scanDevices(targetIp = null) { if (!checkSupported()) return; refreshBtn.disabled = true; refreshIcon.classList.add('animate-spin-custom'); const result = await ipcRenderer.invoke('get-devices', customScrcpyPath); refreshBtn.disabled = false; refreshIcon.classList.remove('animate-spin-custom'); if (!result || result.error) return; const current = deviceList.value, nicks = JSON.parse(localStorage.getItem(NICKNAME_KEY) || '{}'); deviceList.innerHTML = result.devices.length ? '' : '<option value="">No devices detected</option>'; result.devices.forEach(id => { const o = document.createElement('option'); o.value = id; o.textContent = nicks[id] ? `${nicks[id]} (${id})` : id; deviceList.appendChild(o); }); if (result.devices.length) { const search = targetIp || current; const found = Array.from(deviceList.options).find(o => o.value.includes(search) && search !== ""); if (found) deviceList.value = found.value; else deviceList.selectedIndex = 0; } updateModeUI(); }
                         async function validateScrcpy() {
-                            if (!checkSupported()) { 
-                                pathDisplay.textContent = 'Preview Mode'; 
-                                pathDisplay.className = 'text-xs font-mono font-bold text-zinc-500'; 
-                                return; 
+                            if (!checkSupported()) {
+                                pathDisplay.textContent = 'Preview Mode';
+                                pathDisplay.className = 'text-xs font-mono font-bold text-zinc-500';
+                                return;
                             }
-                            
+
                             try {
                                 const result = await ipcRenderer.invoke('check-scrcpy', customScrcpyPath);
                                 if (result) {
-                                    pathDisplay.textContent = result.message; 
+                                    pathDisplay.textContent = result.message;
                                     pathDisplay.className = `text-xs font-mono font-bold ${result.found ? 'text-zinc-100' : 'text-red-400'}`;
-                                    startBtn.disabled = !result.found; 
+                                    startBtn.disabled = !result.found;
                                     if (downloadBinaryBtn) downloadBinaryBtn.classList.toggle('hidden', result.found);
-                                    
+
                                     if (result.found) {
                                         const settings = JSON.parse(localStorage.getItem(PERSIST_KEY) || '{}');
                                         if (settings.autoConnect && settings.wirelessIpVal) {
@@ -527,6 +535,7 @@
         document.getElementById('pairBtn').onclick = async () => { const ip = document.getElementById('pairIp').value.trim(), code = document.getElementById('pairCode').value.trim(); if (!ip || !code) return addLog('IP and Code required', 'error'); if (checkSupported()) { const res = await ipcRenderer.invoke('adb-pair', { ip, code, customPath: customScrcpyPath }); if (res && res.success) { addLog('Pairing Successful! Connecting...', 'success'); const cleanIp = ip.split(':')[0] + ':5555'; wirelessIp.value = cleanIp; saveSettings(); document.getElementById('connectWireless').click(); } else if (res) addLog('Pairing Failed: ' + res.message, 'error'); } };
         document.getElementById('listCamInfo').onclick = async () => { const dev = deviceList.value; if (!dev) return addLog("Select a device first!", "error"); addLog(`Querying camera info for ${dev}...`); const res = await ipcRenderer.invoke('get-camera-info', { device: dev, customPath: customScrcpyPath }); if (res.success) res.output.split('\n').forEach(l => { if(l.trim()) addLog(l.trim(), 'success'); }); else addLog(res.message, 'error'); };
         bitrateSlider.oninput = () => { bitrateVal.textContent = bitrateSlider.value + ' Mbps'; saveSettings(); };
+        cropZoomSlider.oninput = () => { cropZoomVal.textContent = cropZoomSlider.value + '%'; saveSettings(); };
         refreshBtn.onclick = () => scanDevices();
         if (checkSupported()) {
             ipcRenderer.on('scrcpy-status', (e, { device, running }) => { if (running) activeSessions.add(device); else activeSessions.delete(device); updateModeUI(); });
@@ -548,7 +557,7 @@
                 record: document.getElementById('recordScreen').checked, cameraFacing: document.getElementById('cameraFacing').value,
                 cameraId: document.getElementById('cameraId').value, codec: document.getElementById('codec').value,
                 cameraAr: document.getElementById('cameraAr').value, cameraHighSpeed: document.getElementById('cameraHighSpeed').checked,
-                vdWidth: document.getElementById('vdWidth').value, vdHeight: document.getElementById('vdHeight').value,
+                cropZoom: parseInt(document.getElementById('cropZoom').value), vdWidth: document.getElementById('vdWidth').value, vdHeight: document.getElementById('vdHeight').value,
                 vdDpi: document.getElementById('vdDpi').value, recordPath: localStorage.getItem('recordPath'),
                 scrcpyPath: customScrcpyPath, rotation: document.getElementById('rotation').value
             });

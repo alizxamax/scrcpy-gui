@@ -519,6 +519,87 @@ namespace ScrcpyGuiDotNet
             }
         }
 
+        private bool TryGetDeviceSize(string? customPath, string deviceId, out int width, out int height)
+        {
+            width = 1080;
+            height = 2400;
+
+            try
+            {
+                string adbPath = GetBinaryPath("adb", customPath);
+                var psi = new ProcessStartInfo
+                {
+                    FileName = adbPath,
+                    Arguments = $"-s {deviceId} shell wm size",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var p = Process.Start(psi);
+                if (p == null) return false;
+
+                string output = p.StandardOutput.ReadToEnd() + "\n" + p.StandardError.ReadToEnd();
+                p.WaitForExit();
+
+                var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines)
+                {
+                    var trimmed = line.Trim();
+                    if (!trimmed.Contains("size")) continue;
+
+                    var token = trimmed.Split(' ').LastOrDefault();
+                    if (string.IsNullOrWhiteSpace(token) || !token.Contains('x')) continue;
+
+                    var parts = token.Split('x');
+                    if (parts.Length != 2) continue;
+                    if (int.TryParse(parts[0], out var w) && int.TryParse(parts[1], out var h) && w > 0 && h > 0)
+                    {
+                        width = w;
+                        height = h;
+                        return true;
+                    }
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
+        private static string? GetCropAreaFromEdges(int leftPercent, int rightPercent, int topPercent, int bottomPercent, int sourceW, int sourceH)
+        {
+            if (sourceW <= 0 || sourceH <= 0) return null;
+
+            leftPercent = Math.Clamp(leftPercent, 0, 45);
+            rightPercent = Math.Clamp(rightPercent, 0, 45);
+            topPercent = Math.Clamp(topPercent, 0, 45);
+            bottomPercent = Math.Clamp(bottomPercent, 0, 45);
+
+            if (leftPercent == 0 && rightPercent == 0 && topPercent == 0 && bottomPercent == 0) return null;
+
+            int left = (int)Math.Round(sourceW * (leftPercent / 100.0));
+            int right = (int)Math.Round(sourceW * (rightPercent / 100.0));
+            int top = (int)Math.Round(sourceH * (topPercent / 100.0));
+            int bottom = (int)Math.Round(sourceH * (bottomPercent / 100.0));
+
+            left -= left % 2;
+            right -= right % 2;
+            top -= top % 2;
+            bottom -= bottom % 2;
+
+            int cropW = sourceW - left - right;
+            int cropH = sourceH - top - bottom;
+
+            cropW = Math.Max(2, cropW - (cropW % 2));
+            cropH = Math.Max(2, cropH - (cropH % 2));
+            if (cropW <= 2 || cropH <= 2) return null;
+
+            if (left + cropW > sourceW || top + cropH > sourceH) return null;
+
+            return $"{cropW}:{cropH}:{left}:{top}";
+        }
+
         public void RunScrcpy(string jsonConfig)
         {
             try
@@ -528,6 +609,8 @@ namespace ScrcpyGuiDotNet
                 
                 string deviceId = root.GetProperty("device").GetString() ?? "";
                 if (string.IsNullOrEmpty(deviceId) || _scrcpyProcesses.ContainsKey(deviceId)) return;
+
+                string? customPath = root.TryGetProperty("scrcpyPath", out var sp) ? sp.GetString() : null;
 
                 var args = new List<string>();
                 if (!string.IsNullOrEmpty(deviceId)) { args.Add("-s"); args.Add(deviceId); }
@@ -640,6 +723,14 @@ namespace ScrcpyGuiDotNet
                         string res = root.TryGetProperty("res", out var r) ? (r.ToString() ?? "0") : "0";
                         if (res != "0") { args.Add("-m"); args.Add(res); }
 
+                        int cropLeft = root.TryGetProperty("cropLeft", out var cl) ? (int.TryParse(cl.ToString(), out var parsedL) ? parsedL : 0) : 0;
+                        int cropRight = root.TryGetProperty("cropRight", out var cr) ? (int.TryParse(cr.ToString(), out var parsedR) ? parsedR : 0) : 0;
+                        int cropTop = root.TryGetProperty("cropTop", out var ct) ? (int.TryParse(ct.ToString(), out var parsedT) ? parsedT : 0) : 0;
+                        int cropBottom = root.TryGetProperty("cropBottom", out var cb) ? (int.TryParse(cb.ToString(), out var parsedB) ? parsedB : 0) : 0;
+                        TryGetDeviceSize(customPath, deviceId, out int sourceW, out int sourceH);
+                        string? cropArea = GetCropAreaFromEdges(cropLeft, cropRight, cropTop, cropBottom, sourceW, sourceH);
+                        if (!string.IsNullOrEmpty(cropArea)) args.Add($"--crop={cropArea}");
+
                         string fps = root.TryGetProperty("fps", out var f) ? (f.ToString() ?? "60") : "60";
                         args.Add("--max-fps"); args.Add(fps);
                     }
@@ -654,7 +745,6 @@ namespace ScrcpyGuiDotNet
                     }
                 }
 
-                string? customPath = root.TryGetProperty("scrcpyPath", out var sp) ? sp.GetString() : null;
                 string executable = GetBinaryPath("scrcpy", customPath);
 
                 var psi = new ProcessStartInfo

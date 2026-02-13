@@ -567,25 +567,35 @@ namespace ScrcpyGuiDotNet
             return false;
         }
 
-        private static string? GetCropAreaFromPercent(int cropPercent, int sourceW, int sourceH)
+        private static string? GetCropAreaFromEdges(int leftPercent, int rightPercent, int topPercent, int bottomPercent, int sourceW, int sourceH)
         {
-            if (cropPercent <= 0) return null;
             if (sourceW <= 0 || sourceH <= 0) return null;
 
-            cropPercent = Math.Min(45, cropPercent);
-            double keepScale = 1.0 - (cropPercent / 100.0);
+            leftPercent = Math.Clamp(leftPercent, 0, 45);
+            rightPercent = Math.Clamp(rightPercent, 0, 45);
+            topPercent = Math.Clamp(topPercent, 0, 45);
+            bottomPercent = Math.Clamp(bottomPercent, 0, 45);
 
-            int cropW = (int)Math.Round(sourceW * keepScale);
-            int cropH = (int)Math.Round(sourceH * keepScale);
+            if (leftPercent == 0 && rightPercent == 0 && topPercent == 0 && bottomPercent == 0) return null;
+
+            int left = (int)Math.Round(sourceW * (leftPercent / 100.0));
+            int right = (int)Math.Round(sourceW * (rightPercent / 100.0));
+            int top = (int)Math.Round(sourceH * (topPercent / 100.0));
+            int bottom = (int)Math.Round(sourceH * (bottomPercent / 100.0));
+
+            left -= left % 2;
+            right -= right % 2;
+            top -= top % 2;
+            bottom -= bottom % 2;
+
+            int cropW = sourceW - left - right;
+            int cropH = sourceH - top - bottom;
 
             cropW = Math.Max(2, cropW - (cropW % 2));
             cropH = Math.Max(2, cropH - (cropH % 2));
-            if (cropW > sourceW || cropH > sourceH) return null;
+            if (cropW <= 2 || cropH <= 2) return null;
 
-            int left = Math.Max(0, (sourceW - cropW) / 2);
-            int top = Math.Max(0, (sourceH - cropH) / 2);
-            left -= left % 2;
-            top -= top % 2;
+            if (left + cropW > sourceW || top + cropH > sourceH) return null;
 
             return $"{cropW}:{cropH}:{left}:{top}";
         }
@@ -713,9 +723,12 @@ namespace ScrcpyGuiDotNet
                         string res = root.TryGetProperty("res", out var r) ? (r.ToString() ?? "0") : "0";
                         if (res != "0") { args.Add("-m"); args.Add(res); }
 
-                        int cropZoom = root.TryGetProperty("cropZoom", out var cz) ? (int.TryParse(cz.ToString(), out var parsed) ? parsed : 0) : 0;
+                        int cropLeft = root.TryGetProperty("cropLeft", out var cl) ? (int.TryParse(cl.ToString(), out var parsedL) ? parsedL : 0) : 0;
+                        int cropRight = root.TryGetProperty("cropRight", out var cr) ? (int.TryParse(cr.ToString(), out var parsedR) ? parsedR : 0) : 0;
+                        int cropTop = root.TryGetProperty("cropTop", out var ct) ? (int.TryParse(ct.ToString(), out var parsedT) ? parsedT : 0) : 0;
+                        int cropBottom = root.TryGetProperty("cropBottom", out var cb) ? (int.TryParse(cb.ToString(), out var parsedB) ? parsedB : 0) : 0;
                         TryGetDeviceSize(customPath, deviceId, out int sourceW, out int sourceH);
-                        string? cropArea = GetCropAreaFromPercent(cropZoom, sourceW, sourceH);
+                        string? cropArea = GetCropAreaFromEdges(cropLeft, cropRight, cropTop, cropBottom, sourceW, sourceH);
                         if (!string.IsNullOrEmpty(cropArea)) args.Add($"--crop={cropArea}");
 
                         string fps = root.TryGetProperty("fps", out var f) ? (f.ToString() ?? "60") : "60";

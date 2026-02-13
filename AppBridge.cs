@@ -567,42 +567,16 @@ namespace ScrcpyGuiDotNet
             return false;
         }
 
-        private static int ParseRotation(string rotation)
+        private static string? GetCropAreaFromPercent(int cropPercent, int sourceW, int sourceH)
         {
-            return int.TryParse(rotation, out var v) ? ((v % 360) + 360) % 360 : 0;
-        }
+            if (cropPercent <= 0) return null;
+            if (sourceW <= 0 || sourceH <= 0) return null;
 
-        private static string? GetCropAreaForPreset(string preset, int sourceW, int sourceH, int rotation)
-        {
-            if (string.IsNullOrWhiteSpace(preset) || preset == "off") return null;
+            cropPercent = Math.Min(45, cropPercent);
+            double keepScale = 1.0 - (cropPercent / 100.0);
 
-            var parts = preset.Split(':');
-            if (parts.Length != 2 || !int.TryParse(parts[0], out int targetW) || !int.TryParse(parts[1], out int targetH) || targetW <= 0 || targetH <= 0)
-            {
-                return null;
-            }
-
-            // If output is rotated 90/270, swap target ratio so result still matches requested visible aspect.
-            if (rotation == 90 || rotation == 270)
-            {
-                (targetW, targetH) = (targetH, targetW);
-            }
-
-            double sourceRatio = (double)sourceW / sourceH;
-            double targetRatio = (double)targetW / targetH;
-
-            int cropW;
-            int cropH;
-            if (sourceRatio > targetRatio)
-            {
-                cropH = sourceH;
-                cropW = (int)Math.Round(cropH * targetRatio);
-            }
-            else
-            {
-                cropW = sourceW;
-                cropH = (int)Math.Round(cropW / targetRatio);
-            }
+            int cropW = (int)Math.Round(sourceW * keepScale);
+            int cropH = (int)Math.Round(sourceH * keepScale);
 
             cropW = Math.Max(2, cropW - (cropW % 2));
             cropH = Math.Max(2, cropH - (cropH % 2));
@@ -614,56 +588,6 @@ namespace ScrcpyGuiDotNet
             top -= top % 2;
 
             return $"{cropW}:{cropH}:{left}:{top}";
-        }
-
-        private static string? GetManualCropArea(JsonElement root, int sourceW, int sourceH, int rotation)
-        {
-            if (!root.TryGetProperty("manualCropW", out var wEl) || !root.TryGetProperty("manualCropH", out var hEl) || !root.TryGetProperty("manualCropX", out var xEl) || !root.TryGetProperty("manualCropY", out var yEl))
-            {
-                return null;
-            }
-
-            if (!int.TryParse(wEl.ToString(), out int w) || !int.TryParse(hEl.ToString(), out int h) || !int.TryParse(xEl.ToString(), out int x) || !int.TryParse(yEl.ToString(), out int y))
-            {
-                return null;
-            }
-
-            if (w <= 0 || h <= 0 || x < 0 || y < 0) return null;
-
-            // User inputs are in current visible orientation; convert back to natural orientation for scrcpy crop.
-            int nw = w, nh = h, nx = x, ny = y;
-            if (rotation == 90)
-            {
-                nw = h;
-                nh = w;
-                nx = sourceW - y - nh;
-                ny = x;
-            }
-            else if (rotation == 270)
-            {
-                nw = h;
-                nh = w;
-                nx = y;
-                ny = sourceH - x - nw;
-            }
-            else if (rotation == 180)
-            {
-                nw = w;
-                nh = h;
-                nx = sourceW - x - nw;
-                ny = sourceH - y - nh;
-            }
-
-            if (nw <= 0 || nh <= 0 || nx < 0 || ny < 0) return null;
-
-            nw = Math.Max(2, nw - (nw % 2));
-            nh = Math.Max(2, nh - (nh % 2));
-            nx -= nx % 2;
-            ny -= ny % 2;
-
-            if (nx + nw > sourceW || ny + nh > sourceH) return null;
-
-            return $"{nw}:{nh}:{nx}:{ny}";
         }
 
         public void RunScrcpy(string jsonConfig)
@@ -789,20 +713,9 @@ namespace ScrcpyGuiDotNet
                         string res = root.TryGetProperty("res", out var r) ? (r.ToString() ?? "0") : "0";
                         if (res != "0") { args.Add("-m"); args.Add(res); }
 
-                        string cropPreset = root.TryGetProperty("cropPreset", out var cp) ? (cp.GetString() ?? "off") : "off";
-                        int rotationDeg = ParseRotation(rotation);
+                        int cropZoom = root.TryGetProperty("cropZoom", out var cz) ? (int.TryParse(cz.ToString(), out var parsed) ? parsed : 0) : 0;
                         TryGetDeviceSize(customPath, deviceId, out int sourceW, out int sourceH);
-
-                        string? cropArea = null;
-                        if (cropPreset == "manual")
-                        {
-                            cropArea = GetManualCropArea(root, sourceW, sourceH, rotationDeg);
-                        }
-                        else
-                        {
-                            cropArea = GetCropAreaForPreset(cropPreset, sourceW, sourceH, rotationDeg);
-                        }
-
+                        string? cropArea = GetCropAreaFromPercent(cropZoom, sourceW, sourceH);
                         if (!string.IsNullOrEmpty(cropArea)) args.Add($"--crop={cropArea}");
 
                         string fps = root.TryGetProperty("fps", out var f) ? (f.ToString() ?? "60") : "60";

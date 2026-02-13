@@ -519,6 +519,57 @@ namespace ScrcpyGuiDotNet
             }
         }
 
+        private static string? GetCropAreaForPreset(string preset, string? maxSize)
+        {
+            if (string.IsNullOrWhiteSpace(preset) || preset == "off") return null;
+
+            int sourceW = 1080;
+            int sourceH = 2400;
+
+            if (!string.IsNullOrWhiteSpace(maxSize) && int.TryParse(maxSize, out var parsed) && parsed > 0)
+            {
+                sourceW = parsed;
+                sourceH = parsed * 16 / 9;
+            }
+
+            if (sourceW <= 0 || sourceH <= 0) return null;
+
+            var parts = preset.Split(':');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int targetW) || !int.TryParse(parts[1], out int targetH) || targetW <= 0 || targetH <= 0)
+            {
+                return null;
+            }
+
+            double sourceRatio = (double)sourceW / sourceH;
+            double targetRatio = (double)targetW / targetH;
+
+            int cropW;
+            int cropH;
+            if (sourceRatio > targetRatio)
+            {
+                cropH = sourceH;
+                cropW = (int)Math.Round(cropH * targetRatio);
+            }
+            else
+            {
+                cropW = sourceW;
+                cropH = (int)Math.Round(cropW / targetRatio);
+            }
+
+            cropW = Math.Max(2, cropW - (cropW % 2));
+            cropH = Math.Max(2, cropH - (cropH % 2));
+
+            if (cropW > sourceW || cropH > sourceH) return null;
+
+            int left = Math.Max(0, (sourceW - cropW) / 2);
+            int top = Math.Max(0, (sourceH - cropH) / 2);
+
+            left -= left % 2;
+            top -= top % 2;
+
+            return $"{cropW}:{cropH}:{left}:{top}";
+        }
+
         public void RunScrcpy(string jsonConfig)
         {
             try
@@ -639,6 +690,10 @@ namespace ScrcpyGuiDotNet
                         
                         string res = root.TryGetProperty("res", out var r) ? (r.ToString() ?? "0") : "0";
                         if (res != "0") { args.Add("-m"); args.Add(res); }
+
+                        string cropPreset = root.TryGetProperty("cropPreset", out var cp) ? (cp.GetString() ?? "off") : "off";
+                        string? cropArea = GetCropAreaForPreset(cropPreset, res);
+                        if (!string.IsNullOrEmpty(cropArea)) args.Add($"--crop={cropArea}");
 
                         string fps = root.TryGetProperty("fps", out var f) ? (f.ToString() ?? "60") : "60";
                         args.Add("--max-fps"); args.Add(fps);

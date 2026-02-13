@@ -519,6 +519,153 @@ namespace ScrcpyGuiDotNet
             }
         }
 
+        private bool TryGetDeviceSize(string? customPath, string deviceId, out int width, out int height)
+        {
+            width = 1080;
+            height = 2400;
+
+            try
+            {
+                string adbPath = GetBinaryPath("adb", customPath);
+                var psi = new ProcessStartInfo
+                {
+                    FileName = adbPath,
+                    Arguments = $"-s {deviceId} shell wm size",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var p = Process.Start(psi);
+                if (p == null) return false;
+
+                string output = p.StandardOutput.ReadToEnd() + "\n" + p.StandardError.ReadToEnd();
+                p.WaitForExit();
+
+                var lines = output.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var line in lines)
+                {
+                    var trimmed = line.Trim();
+                    if (!trimmed.Contains("size")) continue;
+
+                    var token = trimmed.Split(' ').LastOrDefault();
+                    if (string.IsNullOrWhiteSpace(token) || !token.Contains('x')) continue;
+
+                    var parts = token.Split('x');
+                    if (parts.Length != 2) continue;
+                    if (int.TryParse(parts[0], out var w) && int.TryParse(parts[1], out var h) && w > 0 && h > 0)
+                    {
+                        width = w;
+                        height = h;
+                        return true;
+                    }
+                }
+            }
+            catch { }
+
+            return false;
+        }
+
+        private static int ParseRotation(string rotation)
+        {
+            return int.TryParse(rotation, out var v) ? ((v % 360) + 360) % 360 : 0;
+        }
+
+        private static string? GetCropAreaForPreset(string preset, int sourceW, int sourceH, int rotation)
+        {
+            if (string.IsNullOrWhiteSpace(preset) || preset == "off") return null;
+
+            var parts = preset.Split(':');
+            if (parts.Length != 2 || !int.TryParse(parts[0], out int targetW) || !int.TryParse(parts[1], out int targetH) || targetW <= 0 || targetH <= 0)
+            {
+                return null;
+            }
+
+            // If output is rotated 90/270, swap target ratio so result still matches requested visible aspect.
+            if (rotation == 90 || rotation == 270)
+            {
+                (targetW, targetH) = (targetH, targetW);
+            }
+
+            double sourceRatio = (double)sourceW / sourceH;
+            double targetRatio = (double)targetW / targetH;
+
+            int cropW;
+            int cropH;
+            if (sourceRatio > targetRatio)
+            {
+                cropH = sourceH;
+                cropW = (int)Math.Round(cropH * targetRatio);
+            }
+            else
+            {
+                cropW = sourceW;
+                cropH = (int)Math.Round(cropW / targetRatio);
+            }
+
+            cropW = Math.Max(2, cropW - (cropW % 2));
+            cropH = Math.Max(2, cropH - (cropH % 2));
+            if (cropW > sourceW || cropH > sourceH) return null;
+
+            int left = Math.Max(0, (sourceW - cropW) / 2);
+            int top = Math.Max(0, (sourceH - cropH) / 2);
+            left -= left % 2;
+            top -= top % 2;
+
+            return $"{cropW}:{cropH}:{left}:{top}";
+        }
+
+        private static string? GetManualCropArea(JsonElement root, int sourceW, int sourceH, int rotation)
+        {
+            if (!root.TryGetProperty("manualCropW", out var wEl) || !root.TryGetProperty("manualCropH", out var hEl) || !root.TryGetProperty("manualCropX", out var xEl) || !root.TryGetProperty("manualCropY", out var yEl))
+            {
+                return null;
+            }
+
+            if (!int.TryParse(wEl.ToString(), out int w) || !int.TryParse(hEl.ToString(), out int h) || !int.TryParse(xEl.ToString(), out int x) || !int.TryParse(yEl.ToString(), out int y))
+            {
+                return null;
+            }
+
+            if (w <= 0 || h <= 0 || x < 0 || y < 0) return null;
+
+            // User inputs are in current visible orientation; convert back to natural orientation for scrcpy crop.
+            int nw = w, nh = h, nx = x, ny = y;
+            if (rotation == 90)
+            {
+                nw = h;
+                nh = w;
+                nx = sourceW - y - nh;
+                ny = x;
+            }
+            else if (rotation == 270)
+            {
+                nw = h;
+                nh = w;
+                nx = y;
+                ny = sourceH - x - nw;
+            }
+            else if (rotation == 180)
+            {
+                nw = w;
+                nh = h;
+                nx = sourceW - x - nw;
+                ny = sourceH - y - nh;
+            }
+
+            if (nw <= 0 || nh <= 0 || nx < 0 || ny < 0) return null;
+
+            nw = Math.Max(2, nw - (nw % 2));
+            nh = Math.Max(2, nh - (nh % 2));
+            nx -= nx % 2;
+            ny -= ny % 2;
+
+            if (nx + nw > sourceW || ny + nh > sourceH) return null;
+
+            return $"{nw}:{nh}:{nx}:{ny}";
+        }
+
         public void RunScrcpy(string jsonConfig)
         {
             try
@@ -528,6 +675,8 @@ namespace ScrcpyGuiDotNet
                 
                 string deviceId = root.GetProperty("device").GetString() ?? "";
                 if (string.IsNullOrEmpty(deviceId) || _scrcpyProcesses.ContainsKey(deviceId)) return;
+
+                string? customPath = root.TryGetProperty("scrcpyPath", out var sp) ? sp.GetString() : null;
 
                 var args = new List<string>();
                 if (!string.IsNullOrEmpty(deviceId)) { args.Add("-s"); args.Add(deviceId); }
@@ -640,6 +789,22 @@ namespace ScrcpyGuiDotNet
                         string res = root.TryGetProperty("res", out var r) ? (r.ToString() ?? "0") : "0";
                         if (res != "0") { args.Add("-m"); args.Add(res); }
 
+                        string cropPreset = root.TryGetProperty("cropPreset", out var cp) ? (cp.GetString() ?? "off") : "off";
+                        int rotationDeg = ParseRotation(rotation);
+                        TryGetDeviceSize(customPath, deviceId, out int sourceW, out int sourceH);
+
+                        string? cropArea = null;
+                        if (cropPreset == "manual")
+                        {
+                            cropArea = GetManualCropArea(root, sourceW, sourceH, rotationDeg);
+                        }
+                        else
+                        {
+                            cropArea = GetCropAreaForPreset(cropPreset, sourceW, sourceH, rotationDeg);
+                        }
+
+                        if (!string.IsNullOrEmpty(cropArea)) args.Add($"--crop={cropArea}");
+
                         string fps = root.TryGetProperty("fps", out var f) ? (f.ToString() ?? "60") : "60";
                         args.Add("--max-fps"); args.Add(fps);
                     }
@@ -654,7 +819,6 @@ namespace ScrcpyGuiDotNet
                     }
                 }
 
-                string? customPath = root.TryGetProperty("scrcpyPath", out var sp) ? sp.GetString() : null;
                 string executable = GetBinaryPath("scrcpy", customPath);
 
                 var psi = new ProcessStartInfo

@@ -62,7 +62,7 @@ ScrcpyGUI v3 is the next evolution of Android device control. By migrating to Ta
 ## 🛠️ Development
 
 ### Requirements
-- Node.js (v18+)
+- Node.js (v18+ recommended, Node 16 supported for frontend build via compatibility launcher)
 - Rust & Cargo
 - [Tauri v2 Prerequisites](https://v2.tauri.app/start/prerequisites/)
 

@@ -85,6 +85,23 @@ ScrcpyGUI v3 is the next evolution of Android device control. By migrating to Ta
    npm run tauri build
    ```
 
+### Desktop Build Shortcuts
+
+Use these scripts to create desktop bundles quickly:
+
+```bash
+# Build for the current host platform
+npm run build:desktop
+
+# Build for specific desktop targets
+npm run build:desktop:linux
+npm run build:desktop:windows
+npm run build:desktop:macos-intel
+npm run build:desktop:macos-apple-silicon
+```
+
+> Note: Cross-compiling desktop bundles may require target-specific toolchains and OS SDK dependencies installed on your machine.
+
 ## 💖 Support the Project
 
 If you find this tool useful, consider supporting development on Patreon. Your support helps me maintain the project and add new features!

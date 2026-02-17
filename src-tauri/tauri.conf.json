@@ -40,11 +40,10 @@
     "resources": [],
     "windows": {
       "nsis": {
-        "oneClick": false,
-        "allowToChangeInstallationDirectory": true
+        "oneClick": false
       }
     },
-    "macos": {
+    "macOS": {
       "dmg": {}
     },
     "linux": {

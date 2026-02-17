@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Play, Square, Monitor, Camera, LayoutGrid, ChevronDown, Lock, Unlock, Settings2, Video, ExternalLink } from 'lucide-react';
+import { Play, Square, Monitor, Camera, LayoutGrid, ChevronDown, Lock, Unlock, Settings2, Video, ExternalLink, Crop } from 'lucide-react';
 import { ScrcpyConfig } from '../hooks/useScrcpy';
 import Tooltip from './Tooltip';
 
@@ -450,6 +450,78 @@ export default function ControlPanel({ config, setConfig, onStart, onStop, isRun
                     )}
                 </div>
             </div>
+
+
+            {config.sessionMode === 'mirror' && (
+                <div className="glass p-3.5 rounded-xl space-y-3 border border-zinc-800 bg-zinc-900/40 backdrop-blur-md">
+                    <div className="flex items-center justify-between border-b border-zinc-800/60 pb-2">
+                        <div className="flex items-center gap-2">
+                            <Crop size={12} className="text-primary" />
+                            <h3 className="text-[10px] font-black uppercase text-zinc-300 tracking-widest">Crop Settings</h3>
+                        </div>
+                        <button
+                            onClick={() => handleChange('cropEnabled', !config.cropEnabled)}
+                            className={`relative h-5 w-10 rounded-full border transition-colors ${config.cropEnabled ? 'bg-primary/80 border-primary' : 'bg-zinc-900 border-zinc-700'}`}
+                            aria-label="Toggle crop"
+                        >
+                            <span className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-black transition-all ${config.cropEnabled ? 'left-5.5' : 'left-0.5'}`} />
+                        </button>
+                    </div>
+
+                    <CustomSelect
+                        label="Aspect Ratio Preset"
+                        value={config.cropPreset || 'original'}
+                        onChange={(val) => handleChange('cropPreset', val)}
+                        options={[
+                            { value: 'original', label: 'Original (No crop)' },
+                            { value: '16:9', label: '16:9' },
+                            { value: '4:3', label: '4:3' },
+                            { value: '1:1', label: '1:1' },
+                        ]}
+                    />
+
+                    <div className="space-y-1">
+                        <div className="flex items-center justify-between">
+                            <label className="text-[9px] font-black text-zinc-500 uppercase tracking-tighter">Live Preview</label>
+                            <span className="text-[9px] text-zinc-400 font-semibold">Centered crop</span>
+                        </div>
+                        <div className="relative h-24 w-full rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
+                            <div className="absolute inset-0 bg-gradient-to-r from-zinc-900 to-zinc-800" />
+                            {(() => {
+                                const preset = config.cropPreset || 'original';
+                                const ratioMap: Record<string, number> = { '16:9': 16 / 9, '4:3': 4 / 3, '1:1': 1 };
+                                const ratio = ratioMap[preset];
+                                if (!ratio || !config.cropEnabled) {
+                                    return <div className="absolute inset-0 border border-primary/40" />;
+                                }
+                                const containerW = 100;
+                                const containerH = 60;
+                                const containerRatio = containerW / containerH;
+                                let cropW = containerW;
+                                let cropH = containerH;
+                                if (containerRatio > ratio) {
+                                    cropW = containerH * ratio;
+                                } else {
+                                    cropH = containerW / ratio;
+                                }
+                                const widthPct = (cropW / containerW) * 100;
+                                const heightPct = (cropH / containerH) * 100;
+                                const leftPct = (100 - widthPct) / 2;
+                                const topPct = (100 - heightPct) / 2;
+                                return (
+                                    <>
+                                        <div className="absolute inset-0 bg-black/45" />
+                                        <div
+                                            className="absolute border-2 border-primary shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]"
+                                            style={{ width: `${widthPct}%`, height: `${heightPct}%`, left: `${leftPct}%`, top: `${topPct}%` }}
+                                        />
+                                    </>
+                                );
+                            })()}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="pt-2 relative z-10">
                 {!isRunning ? (

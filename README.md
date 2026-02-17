@@ -62,7 +62,7 @@ ScrcpyGUI v3 is the next evolution of Android device control. By migrating to Ta
 ## 🛠️ Development
 
 ### Requirements
-- Node.js (v18+)
+- Node.js (v18+ recommended, Node 16 supported for frontend build via compatibility launcher)
 - Rust & Cargo
 - [Tauri v2 Prerequisites](https://v2.tauri.app/start/prerequisites/)
 
@@ -84,6 +84,23 @@ ScrcpyGUI v3 is the next evolution of Android device control. By migrating to Ta
    ```bash
    npm run tauri build
    ```
+
+### Desktop Build Shortcuts
+
+Use these scripts to create desktop bundles quickly:
+
+```bash
+# Build for the current host platform
+npm run build:desktop
+
+# Build for specific desktop targets
+npm run build:desktop:linux
+npm run build:desktop:windows
+npm run build:desktop:macos-intel
+npm run build:desktop:macos-apple-silicon
+```
+
+> Note: Cross-compiling desktop bundles may require target-specific toolchains and OS SDK dependencies installed on your machine.
 
 ## 💖 Support the Project
 

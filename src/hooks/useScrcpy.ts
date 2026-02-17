@@ -29,6 +29,8 @@ export interface ScrcpyConfig {
     rotation?: string;
     res?: string;
     aspectRatioLock?: boolean;
+    cropEnabled?: boolean;
+    cropPreset?: 'original' | '16:9' | '4:3' | '1:1';
 }
 
 export function useScrcpy() {
@@ -61,7 +63,9 @@ export function useScrcpy() {
         vdWidth: 1920,
         vdHeight: 1080,
         vdDpi: 420,
-        aspectRatioLock: true
+        aspectRatioLock: true,
+        cropEnabled: false,
+        cropPreset: 'original'
     });
     const prevDevicesRef = useRef<string[]>([]);
 

@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="icon.png" width="128" height="128" alt="ScrcpyGUI Icon">
+  <br>
+  app icon
+</p>
+
 # ScrcpyGUI v3 🚀
 
 <img width="100" height="100" alt="icon" src="https://github.com/user-attachments/assets/3c45eed6-eb0a-44d5-ac5b-a0d7c39baa87" />

@@ -3,6 +3,7 @@
 <img width="100" height="100" alt="icon" src="https://github.com/user-attachments/assets/3c45eed6-eb0a-44d5-ac5b-a0d7c39baa87" />
 
 A modern, high-performance GUI for [scrcpy](https://github.com/Genymobile/scrcpy), completely rebuilt from the ground up with **Tauri v2**, **React 19**, and **Rust**.
+
 <img width="1870" height="998" alt="image" src="https://github.com/user-attachments/assets/a416fcd3-295a-4a01-8769-6f9da429b028" />
 
 
